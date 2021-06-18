@@ -10,5 +10,6 @@ A script to dollar-cost average cryptocurrency on Coinbase Pro
 ## Helpful links
 
 - [coinbase Pro API documentation](https://docs.pro.coinbase.com)
+- Sandbox website: <https://public.sandbox.pro.coinbase.com>
 - [coinbasepro-python library](https://github.com/danpaquin/coinbasepro-python)
 - [Postman API Client](https://www.postman.com/product/api-client/) - Test API calls
