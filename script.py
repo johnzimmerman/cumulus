@@ -1,6 +1,10 @@
-from os import environ
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""cumulus.py: Dollar-cost average cryptocurrency on Coinbase Pro."""
 
 import cbpro
+from os import environ
 
 
 # TODO: If the variables are in the ENV but empty, no warning is given
