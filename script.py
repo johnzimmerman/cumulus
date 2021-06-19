@@ -2,6 +2,7 @@ from os import environ
 
 import cbpro
 
+
 # TODO: If the variables are in the ENV but empty, no warning is given
 # https://www.twilio.com/blog/environment-variables-python
 API_KEY = environ["CBPRO_KEY"]
