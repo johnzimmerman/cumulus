@@ -20,7 +20,7 @@ A script to dollar-cost average cryptocurrency on Coinbase Pro
     - `CBPRO_SECRET=""`
     - `CBPRO_KEY=""`
     - `CBPRO_API_URL=""` - **Only needs set in production.** The coinbase Pro API defaults to the production URL, but I think that's a bad idea so I set our script to use the sandbox URL by default.
-1. Run: `python script.py`. You should see a bunch of account info get printed to the screen if you set it up correctly.
+1. Run: `./cumulus.py`. You should see a bunch of account info get printed to the screen if you set it up correctly.
 
 ## Helpful links
 
