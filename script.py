@@ -5,7 +5,7 @@ import cbpro
 
 # TODO: If the variables are in the ENV but empty, no warning is given
 # https://www.twilio.com/blog/environment-variables-python
-API_URL = API_URL = environ.get(
+API_URL = environ.get(
     "CBPRO_API_URL") or "https://api-public.sandbox.pro.coinbase.com"
 API_KEY = environ["CBPRO_KEY"]
 API_SECRET = environ["CBPRO_SECRET"]
