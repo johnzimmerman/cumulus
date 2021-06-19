@@ -3,10 +3,13 @@
 
 """cumulus.py: Dollar-cost average cryptocurrency on Coinbase Pro."""
 
-import cbpro
+import logging
 from os import environ
 
+import cbpro
 
+
+logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 # TODO: If the variables are in the ENV but empty, no warning is given
 # https://www.twilio.com/blog/environment-variables-python
 API_URL = environ.get(
@@ -17,6 +20,7 @@ API_PASSPHRASE = environ["CBPRO_PASSPHRASE"]
 
 
 if __name__ == "__main__":
+    logging.info("Running cumulus.py")
     auth_client = cbpro.AuthenticatedClient(
         API_KEY, API_SECRET, API_PASSPHRASE,
         api_url=API_URL)
