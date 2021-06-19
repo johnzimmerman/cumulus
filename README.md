@@ -13,7 +13,7 @@ A script to dollar-cost average cryptocurrency on Coinbase Pro
 1. Install the project dependencies.
     - Go to the directory where requirements.txt is located.
     - Activate your virtualenv.
-    - Run: `pip install -r requirements.txt` in your shell.
+    - Run: `pip install -r requirements_dev.txt` in your shell.
 1. Create a Sandbox API key. Be sure to write down the passphrase and the secret because you won't be able to view them again.
 1. Add the following environment variables to your machine using the information you wrote down above. The public key can be found on the web interface.
     - `CBPRO_PASSPHRASE=""`
