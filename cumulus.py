@@ -9,6 +9,8 @@ from os import environ
 import cbpro
 
 
+# Set logging format
+# e.g. 2021-06-20 12:09:10,767 - INFO - Running cumulus.py
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
@@ -39,7 +41,6 @@ class OrderManager:
             logging.info(
                 f"Your purchase for ${amount} of {product_id} has started.")
         return
-        # print(response)
 
 
 if __name__ == "__main__":
@@ -47,7 +48,5 @@ if __name__ == "__main__":
     auth_client = cbpro.AuthenticatedClient(
         API_KEY, API_SECRET, API_PASSPHRASE,
         api_url=API_URL)
-    # accounts = auth_client.get_accounts()
-    # print(accounts)
     my_order_manager = OrderManager(auth_client)
     my_order_manager.placeMarketOrder("BTC-USD", 6000.00)
