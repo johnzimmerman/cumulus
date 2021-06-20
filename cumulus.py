@@ -9,6 +9,7 @@ from os import environ
 import cbpro
 
 
+# TODO: Add log level to format
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
 # TODO: If the variables are in the ENV but empty, no warning is given
@@ -27,13 +28,17 @@ class OrderManager:
         self.client = cbpro_auth_client
 
     def placeMarketOrder(self, product_id, amount):
-        logging.info(f"Attempting to purchase {amount} of {product_id}.")
-        # TODO: Ensure amount is correctly formatted
+        logging.info(f"Attempting to purchase ${amount} of {product_id}.")
         response = self.client.place_market_order(
             product_id=product_id,
             side='buy',
             funds=amount)
-        print(response)
+        if "message" in response:
+            logging.warning(response["message"])
+        else:
+            logging.info(f"Your purchase for ${amount} of {product_id} has started.")
+        return
+        # print(response)
 
 
 if __name__ == "__main__":
@@ -44,4 +49,5 @@ if __name__ == "__main__":
     # accounts = auth_client.get_accounts()
     # print(accounts)
     my_order_manager = OrderManager(auth_client)
-    my_order_manager.placeMarketOrder("BTC-USD", "100.00")
+    my_order_manager.placeMarketOrder("BTC-USD", 5000.00)
+    
