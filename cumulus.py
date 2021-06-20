@@ -9,8 +9,8 @@ from os import environ
 import cbpro
 
 
-# TODO: Add log level to format
-logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
+logging.basicConfig(
+    format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 # TODO: If the variables are in the ENV but empty, no warning is given
 # https://www.twilio.com/blog/environment-variables-python
@@ -36,7 +36,8 @@ class OrderManager:
         if "message" in response:
             logging.warning(response["message"])
         else:
-            logging.info(f"Your purchase for ${amount} of {product_id} has started.")
+            logging.info(
+                f"Your purchase for ${amount} of {product_id} has started.")
         return
         # print(response)
 
@@ -49,5 +50,4 @@ if __name__ == "__main__":
     # accounts = auth_client.get_accounts()
     # print(accounts)
     my_order_manager = OrderManager(auth_client)
-    my_order_manager.placeMarketOrder("BTC-USD", 5000.00)
-    
+    my_order_manager.placeMarketOrder("BTC-USD", 6000.00)
