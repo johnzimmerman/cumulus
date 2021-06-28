@@ -44,9 +44,9 @@ class OrderManager:
 
 
 if __name__ == "__main__":
-    logging.info("Running cumulus.py")
+    logging.info("Running Cumulus...")
     auth_client = cbpro.AuthenticatedClient(
         API_KEY, API_SECRET, API_PASSPHRASE,
         api_url=API_URL)
     my_order_manager = OrderManager(auth_client)
-    my_order_manager.placeMarketOrder("BTC-USD", 6000.00)
+    my_order_manager.placeMarketOrder("BTC-USD", 25.00)
