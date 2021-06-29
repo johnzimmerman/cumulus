@@ -27,4 +27,5 @@ A script to dollar-cost average cryptocurrency on Coinbase Pro
 - [coinbase Pro API documentation](https://docs.pro.coinbase.com)
 - Sandbox website: <https://public.sandbox.pro.coinbase.com>
 - [coinbasepro-python library](https://github.com/danpaquin/coinbasepro-python)
+- [Functions Framework for Python](https://github.com/GoogleCloudPlatform/functions-framework-python) - Test GCP functions locally
 - [Postman API Client](https://www.postman.com/product/api-client/) - Test API calls
