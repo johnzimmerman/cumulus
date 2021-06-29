@@ -22,6 +22,29 @@ A script to dollar-cost average cryptocurrency on Coinbase Pro
     - `CBPRO_API_URL=""` - **Only needs set in production.** The coinbase Pro API defaults to the production URL, but I think that's a bad idea so I set our script to use the sandbox URL by default.
 1. Run: `./cumulus.py`. You should see a bunch of account info get printed to the screen if you set it up correctly.
 
+## Sample order
+
+The following payload will purchase $10 worth of BTC, $10 worth of ETH, and $5.00 worth of Polygon (MATIC)
+
+```json
+{
+  "buy_orders": [
+    {
+      "product": "BTC-USD",
+      "amount": 10.00
+    },
+    {
+      "product": "ETH-USD",
+      "amount": 10.00
+    },
+    {
+      "product": "MATIC-USD",
+      "amount": 5.00
+    }
+  ]
+}
+```
+
 ## Helpful links
 
 - [coinbase Pro API documentation](https://docs.pro.coinbase.com)
