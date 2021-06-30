@@ -57,10 +57,8 @@ def cumulus_http(request):
     logging.info("Running Cumulus...")
 
     request_json = request.get_json(silent=True)
-    # request_args = request.args
 
     if request_json and "buy_orders" in request_json:
-        print(request_json)
         buy_orders = request_json["buy_orders"]
         auth_client = cbpro.AuthenticatedClient(
             API_KEY, API_SECRET, API_PASSPHRASE,
@@ -70,13 +68,8 @@ def cumulus_http(request):
             product = order["product"]
             amount = order["amount"]
             my_order_manager.placeMarketOrder(product, amount)
-            # elif request_args and 'name' in request_args:
-            # A MultiDict with the parsed contents of the query string. (The part in the URL after the question mark).
-            # I don't think I'll need this
-            #     name = request_args['name']
         response_message = "OK"
     else:
         response_message = 'FAILED'
-    # return 'Hello {}!'.format(escape(name))
 
     return response_message
