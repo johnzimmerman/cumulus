@@ -39,6 +39,9 @@ class OrderManager:
             funds=amount)
         if "message" in response:
             logging.warning(f"PURCHASE FAILED - {response['message']}")
+            # TODO: If a purchase fails, the function will still return "OK"
+            # because the function itself successfully ran. We should probably
+            # alert the user of the failed order. What's best practice here?
         else:
             logging.info(
                 f"Your purchase for ${amount} of {product_id} has started.")
