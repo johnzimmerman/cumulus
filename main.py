@@ -29,6 +29,7 @@ class OrderManager:
 
     def __init__(self, cbpro_auth_client):
         self.client = cbpro_auth_client
+        logging.info("Initialized OrderManager.")
 
     def placeMarketOrder(self, product_id, amount):
         logging.info(f"Attempting to purchase ${amount} of {product_id}.")
@@ -37,7 +38,7 @@ class OrderManager:
             side='buy',
             funds=amount)
         if "message" in response:
-            logging.warning(response["message"])
+            logging.warning(f"PURCHASE FAILED - {response['message']}")
         else:
             logging.info(
                 f"Your purchase for ${amount} of {product_id} has started.")
@@ -57,7 +58,7 @@ def cumulus_http(request):
     logging.info("Running Cumulus...")
 
     request_json = request.get_json(silent=True)
-
+    # print(request_json)
     if request_json and "buy_orders" in request_json:
         buy_orders = request_json["buy_orders"]
         auth_client = cbpro.AuthenticatedClient(
