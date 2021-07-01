@@ -8,6 +8,7 @@ from os import environ
 
 import cbpro
 from flask import escape
+from google.cloud import secretmanager
 
 
 # Set logging format
@@ -15,13 +16,40 @@ from flask import escape
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
+
+def access_secret_version(project_id, secret_id, version_id):
+    """
+    Access the payload for the given secret version if one exists. The version
+    can be a version number as a string (e.g. "5") or an alias (e.g. "latest").
+    """
+
+    # Create the Secret Manager client.
+    client = secretmanager.SecretManagerServiceClient()
+
+    # Build the resource name of the secret version.
+    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+
+    # Access the secret version.
+    response = client.access_secret_version(request={"name": name})
+
+    # Print the secret payload.
+    #
+    # WARNING: Do not print the secret in a production environment - this
+    # snippet is showing how to access the secret material.
+    payload = response.payload.data.decode("UTF-8")
+    return payload
+
+
 # TODO: If the variables are in the ENV but empty, no warning is given
 # https://www.twilio.com/blog/environment-variables-python
 API_URL = environ.get(
     "CBPRO_API_URL") or "https://api-public.sandbox.pro.coinbase.com"
-API_KEY = environ["CBPRO_KEY"]
-API_SECRET = environ["CBPRO_SECRET"]
-API_PASSPHRASE = environ["CBPRO_PASSPHRASE"]
+PROJECT_ID = environ["GCP_PROJECT"]
+API_KEY = access_secret_version(PROJECT_ID, "SANDBOX_CBPRO_KEY", "latest")
+API_SECRET = access_secret_version(
+    PROJECT_ID, "SANDBOX_CBPRO_SECRET", "latest")
+API_PASSPHRASE = access_secret_version(
+    PROJECT_ID, "SANDBOX_CBPRO_PASSPHRASE", "latest")
 
 
 class OrderManager:
