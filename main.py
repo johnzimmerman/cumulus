@@ -45,12 +45,12 @@ def access_secret_version(project_id, secret_id, version_id):
 API_URL = environ.get(
     "CBPRO_API_URL") or "https://api-public.sandbox.pro.coinbase.com"
 # PROJECT_ID = environ["GCP_PROJECT"]
-PROJECT_ID = "132660537911"
-API_KEY = access_secret_version(PROJECT_ID, "SANDBOX_CBPRO_KEY", "latest")
+PROJECT_ID = "cumulus-317414"
+API_KEY = access_secret_version(PROJECT_ID, "CBPRO_KEY", "latest")
 API_SECRET = access_secret_version(
-    PROJECT_ID, "SANDBOX_CBPRO_SECRET", "latest")
+    PROJECT_ID, "CBPRO_SECRET", "latest")
 API_PASSPHRASE = access_secret_version(
-    PROJECT_ID, "SANDBOX_CBPRO_PASSPHRASE", "latest")
+    PROJECT_ID, "CBPRO_PASSPHRASE", "latest")
 
 
 class OrderManager:
