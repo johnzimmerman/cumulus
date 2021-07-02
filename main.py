@@ -44,7 +44,8 @@ def access_secret_version(project_id, secret_id, version_id):
 # https://www.twilio.com/blog/environment-variables-python
 API_URL = environ.get(
     "CBPRO_API_URL") or "https://api-public.sandbox.pro.coinbase.com"
-PROJECT_ID = environ["GCP_PROJECT"]
+# PROJECT_ID = environ["GCP_PROJECT"]
+PROJECT_ID = "132660537911"
 API_KEY = access_secret_version(PROJECT_ID, "SANDBOX_CBPRO_KEY", "latest")
 API_SECRET = access_secret_version(
     PROJECT_ID, "SANDBOX_CBPRO_SECRET", "latest")
