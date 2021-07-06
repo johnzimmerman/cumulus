@@ -44,13 +44,15 @@ def access_secret_version(project_id, secret_id, version_id):
 # https://www.twilio.com/blog/environment-variables-python
 API_URL = environ.get(
     "CBPRO_API_URL") or "https://api-public.sandbox.pro.coinbase.com"
-# PROJECT_ID = environ["GCP_PROJECT"]
-PROJECT_ID = "cumulus-317414"
-API_KEY = access_secret_version(PROJECT_ID, "CBPRO_KEY", "latest")
+try:
+    PROJECT_ID = environ["PROJECT_ID"]
+except KeyError:
+    logging.error("Unable to find GCP Project ID.")
+API_KEY = access_secret_version(PROJECT_ID, "SANDBOX_CBPRO_KEY", "latest")
 API_SECRET = access_secret_version(
-    PROJECT_ID, "CBPRO_SECRET", "latest")
+    PROJECT_ID, "SANDBOX_CBPRO_SECRET", "latest")
 API_PASSPHRASE = access_secret_version(
-    PROJECT_ID, "CBPRO_PASSPHRASE", "latest")
+    PROJECT_ID, "SANDBOX_CBPRO_PASSPHRASE", "latest")
 
 
 class OrderManager:
@@ -74,6 +76,7 @@ class OrderManager:
         else:
             logging.info(
                 f"Your purchase for ${amount} of {product_id} has started.")
+                print(response)
         return
 
 
