@@ -9,6 +9,8 @@ from os import environ
 import cbpro
 from flask import escape
 from google.cloud import secretmanager
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
 
 # Set logging format
@@ -60,6 +62,7 @@ class OrderManager:
 
     def __init__(self, cbpro_auth_client):
         self.client = cbpro_auth_client
+        self.placed_orders = {}
         logging.info("Initialized OrderManager.")
 
     def placeMarketOrder(self, product_id, amount):
@@ -76,7 +79,7 @@ class OrderManager:
         else:
             logging.info(
                 f"Your purchase for ${amount} of {product_id} has started.")
-                print(response)
+            print(response)
         return
 
 
@@ -109,3 +112,19 @@ def cumulus_http(request):
         response_message = 'FAILED'
 
     return response_message
+
+
+if __name__ == "__main__":
+    message = Mail(
+        from_email='jfzimmerman@gmail.com',
+        to_emails='jfzimmerman@gmail.com',
+        subject='Sending with Twilio SendGrid is Fun',
+        html_content='<strong>and easy to do anywhere, even with Python</strong>')
+    try:
+        sg = SendGridAPIClient(environ.get('SENDGRID_API_KEY'))
+        response = sg.send(message)
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
+    except Exception as e:
+        print(e.message)
