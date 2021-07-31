@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""cumulus.py: Dollar-cost average cryptocurrency on Coinbase Pro."""
+"""Cumulus Dollar-cost average cryptocurrency on Coinbase Pro."""
 
 import logging
 from os import environ
@@ -20,6 +20,7 @@ from sendgrid.helpers.mail import Mail
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
+
 def access_secret_version(project_id, secret_id, version_id):
     """
     Access the payload for the given secret version if one exists. The version
@@ -37,10 +38,14 @@ def access_secret_version(project_id, secret_id, version_id):
     payload = response.payload.data.decode("UTF-8")
     return payload
 
+
 # TODO: If the variables are in the ENV but empty, no warning is given
 # https://www.twilio.com/blog/environment-variables-python
+# Coinbase Pro constants
 API_URL = environ.get(
     "CBPRO_API_URL") or "https://api-public.sandbox.pro.coinbase.com"
+
+# GCP constants
 try:
     PROJECT_ID = environ["PROJECT_ID"]
 except KeyError:
@@ -51,21 +56,25 @@ API_SECRET = access_secret_version(
 API_PASSPHRASE = access_secret_version(
     PROJECT_ID, "SANDBOX_CBPRO_PASSPHRASE", "latest")
 
+# Sendgrid constants
+FROM_EMAIL = environ["FROM_EMAIL"]
+TEMPLATE_ID = environ["TEMPLATE_ID"]
 
-def sendEmail(to_email):
+
+def sendEmail(to_email, data):
     message = Mail(
-        from_email="jfzimmerman@gmail.com",
-        to_emails=to_email,
-        subject="Your Coinbase Pro Trade(s)",
-        html_content="<strong>and easy to do anywhere, even with Python</strong>")
+        from_email=FROM_EMAIL,
+        to_emails=to_email)
+    message.dynamic_template_data = data
+    message.template_id = TEMPLATE_ID
     try:
+        logging.info("Attempting to send email.")
         sg = SendGridAPIClient(environ.get('SENDGRID_API_KEY'))
         response = sg.send(message)
-        print(response.status_code)
-        print(response.body)
-        print(response.headers)
     except Exception as e:
-        print(e.message)
+        logging.error(f"Error: {e}")
+    logging.info(f"Status code: {response.status_code}")
+    return
 
 
 class OrderManager:
@@ -155,14 +164,23 @@ def cumulus_http(request):
             amount = order["amount"]
             my_order_manager.placeMarketOrder(product, amount)
 
-        # Attempt to get settled order info.
-        my_order_manager.placed_orders[:] = [my_order_manager.getOrder(
+        # Call getOrder to retrieve and replace the initiral order
+        # #information. I'm hoping the transaction has settled by
+        # this point.
+        # my_order_manager.placed_orders[:] = [my_order_manager.getOrder(
+        #     order["id"]) for order in my_order_manager.placed_orders]
+
+        placed_orders = [my_order_manager.getOrder(
             order["id"]) for order in my_order_manager.placed_orders]
 
-        print(my_order_manager.placed_orders)
+        errors = my_order_manager.order_errors
 
-        # Send a receipt.
-        print("Fake receipt sent")
+        # Email a receipt.
+        email_data = {
+            "orders": placed_orders,
+            "errors": errors
+            }
+        sendEmail("jfzimmerman@gmail.com", email_data)
 
         response_message = "OK"
     else:
