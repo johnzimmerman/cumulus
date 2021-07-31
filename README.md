@@ -52,3 +52,9 @@ The following payload will purchase $10 worth of BTC, $10 worth of ETH, and $5.0
 - [coinbasepro-python library](https://github.com/danpaquin/coinbasepro-python)
 - [Functions Framework for Python](https://github.com/GoogleCloudPlatform/functions-framework-python) - Test GCP functions locally
 - [Postman API Client](https://www.postman.com/product/api-client/) - Test API calls
+
+## Misc.
+
+Deploy to production with the following:
+
+`gcloud functions deploy cumulus-http-prod --entry-point cumulus_http --runtime python39 --trigger-http --set-env-vars CBPRO_API_URL="https://api.pro.coinbase.com" --service-account=cumulus-invoke@cumulus-317414.iam.gserviceaccount.com`
