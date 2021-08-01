@@ -57,11 +57,12 @@ API_PASSPHRASE = access_secret_version(
     PROJECT_ID, "SANDBOX_CBPRO_PASSPHRASE", "latest")
 
 # Sendgrid constants
+SENDGRID_API_KEY = environ["SENDGRID_API_KEY"]
 FROM_EMAIL = environ["FROM_EMAIL"]
 TEMPLATE_ID = environ["TEMPLATE_ID"]
 
 
-def sendEmail(to_email, data):
+def send_email(to_email, data):
     message = Mail(
         from_email=FROM_EMAIL,
         to_emails=to_email)
@@ -69,11 +70,11 @@ def sendEmail(to_email, data):
     message.template_id = TEMPLATE_ID
     try:
         logging.info("Attempting to send email.")
-        sg = SendGridAPIClient(environ.get('SENDGRID_API_KEY'))
+        sg = SendGridAPIClient(SENDGRID_API_KEY)
         response = sg.send(message)
     except Exception as e:
         logging.error(f"Error: {e}")
-    logging.info(f"Status code: {response.status_code}")
+    # logging.info(f"Status code: {response.status_code}")
     return
 
 
@@ -83,7 +84,7 @@ class OrderManager:
     def __init__(self, cbpro_auth_client):
         self.client = cbpro_auth_client
         self.placed_orders = []
-        self.order_errors = []
+        self.failed_orders = []
         logging.info("Initialized OrderManager.")
 
     def getOrder(self, id):
@@ -114,13 +115,12 @@ class OrderManager:
                 logging.warning(f"PURCHASE FAILED - {response['message']}.")
 
                 # Add error to data structure for email.
-                self.order_errors.append(
+                self.failed_orders.append(
                     {
                         "product_id": product_id,
-                        "amount": amount,
+                        "specified_funds": amount,
                         "message": response["message"]
-                    }
-                )
+                    })
             else:
                 logging.info(
                     f"Your purchase for ${amount} of {product_id} has started.")
@@ -130,7 +130,7 @@ class OrderManager:
                 # be updated later before sending the email receipt.
                 self.placed_orders.append(response)
         except Exception as e:
-            logging.warning(e.message)
+            logging.error(e.message)
 
         return
 
@@ -165,22 +165,22 @@ def cumulus_http(request):
             my_order_manager.placeMarketOrder(product, amount)
 
         # Call getOrder to retrieve and replace the initiral order
-        # #information. I'm hoping the transaction has settled by
-        # this point.
+        # #information. I'm hoping/betting that the transaction 
+        # has settled by this point.
         # my_order_manager.placed_orders[:] = [my_order_manager.getOrder(
         #     order["id"]) for order in my_order_manager.placed_orders]
-
         placed_orders = [my_order_manager.getOrder(
             order["id"]) for order in my_order_manager.placed_orders]
-
-        errors = my_order_manager.order_errors
+        failed_orders = my_order_manager.failed_orders
 
         # Email a receipt.
         email_data = {
-            "orders": placed_orders,
-            "errors": errors
+            "user": {
+                "placedOrders": placed_orders,
+                "failedOrders": failed_orders
             }
-        sendEmail("jfzimmerman@gmail.com", email_data)
+        }
+        send_email("jfzimmerman@gmail.com", email_data)
 
         response_message = "OK"
     else:
