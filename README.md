@@ -57,4 +57,4 @@ The following payload will purchase $10 worth of BTC, $10 worth of ETH, and $5.0
 
 Deploy to production with the following:
 
-`gcloud functions deploy cumulus-http-prod --entry-point cumulus_http --runtime python39 --trigger-http --set-env-vars CBPRO_API_URL="https://api.pro.coinbase.com" --service-account=cumulus-invoke@cumulus-317414.iam.gserviceaccount.com`
+`gcloud functions deploy cumulus-http-prod --entry-point cumulus_http --runtime python39 --trigger-http --env-vars-file .env.yaml  --service-account=cumulus-invoke@cumulus-317414.iam.gserviceaccount.com`
