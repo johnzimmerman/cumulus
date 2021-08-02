@@ -50,11 +50,11 @@ try:
     PROJECT_ID = environ["PROJECT_ID"]
 except KeyError:
     logging.error("Unable to find GCP Project ID.")
-API_KEY = access_secret_version(PROJECT_ID, "SANDBOX_CBPRO_KEY", "latest")
+API_KEY = access_secret_version(PROJECT_ID, "CBPRO_KEY", "latest")
 API_SECRET = access_secret_version(
-    PROJECT_ID, "SANDBOX_CBPRO_SECRET", "latest")
+    PROJECT_ID, "CBPRO_SECRET", "latest")
 API_PASSPHRASE = access_secret_version(
-    PROJECT_ID, "SANDBOX_CBPRO_PASSPHRASE", "latest")
+    PROJECT_ID, "CBPRO_PASSPHRASE", "latest")
 
 # Sendgrid constants
 SENDGRID_API_KEY = environ["SENDGRID_API_KEY"]
