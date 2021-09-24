@@ -1,3 +1,0 @@
--r requirements.txt
-ipython>=7.24.1
-functions-framework>=2.2.1
