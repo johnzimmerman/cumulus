@@ -4,23 +4,19 @@
 """cumulus.py: Dollar-cost average cryptocurrency on Coinbase Pro."""
 
 import logging
-from os import environ
 
 import cbpro
-
+import yaml
 
 # Set logging format
 # e.g. 2021-06-20 12:09:10,767 - INFO - Running cumulus.py
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-# TODO: If the variables are in the ENV but empty, no warning is given
-# https://www.twilio.com/blog/environment-variables-python
-API_URL = environ.get(
-    "CBPRO_API_URL") or "https://api-public.sandbox.pro.coinbase.com"
-API_KEY = environ["CBPRO_KEY"]
-API_SECRET = environ["CBPRO_SECRET"]
-API_PASSPHRASE = environ["CBPRO_PASSPHRASE"]
+
+def read_yaml(file_path):
+    with open(file_path, "r") as f:
+        return yaml.safe_load(f)
 
 
 class OrderManager:
@@ -30,7 +26,7 @@ class OrderManager:
         self.client = cbpro_auth_client
 
     def placeMarketOrder(self, product_id, amount):
-        logging.info(f"Attempting to purchase ${amount} of {product_id}.")
+        logging.info(f"Attempting order: {product_id} ${amount}")
         response = self.client.place_market_order(
             product_id=product_id,
             side='buy',
@@ -39,14 +35,26 @@ class OrderManager:
             logging.warning(response["message"])
         else:
             logging.info(
-                f"Your purchase for ${amount} of {product_id} has started.")
+                f"Placed order: {product_id} ${amount}")
+        print(f"printing response: {response}") #debug statement 
         return
 
 
 if __name__ == "__main__":
     logging.info("Running Cumulus...")
+
+    config_data = read_yaml("conf/sandbox.yml")
+    api_url = config_data["cbpro"]["url"]
+    key = config_data["cbpro"]["key"]
+    secret = config_data["cbpro"]["secret"]
+    passphrase = config_data["cbpro"]["passphrase"]
+    order_form = config_data["order_form"]
+
     auth_client = cbpro.AuthenticatedClient(
-        API_KEY, API_SECRET, API_PASSPHRASE,
-        api_url=API_URL)
+        key, secret, passphrase, api_url=api_url)
     my_order_manager = OrderManager(auth_client)
-    my_order_manager.placeMarketOrder("BTC-USD", 25.00)
+
+    for order in order_form:
+        asset = order["asset"]
+        amount = order["amount"]
+        my_order_manager.placeMarketOrder(asset, amount)

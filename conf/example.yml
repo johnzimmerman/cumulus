@@ -1,0 +1,14 @@
+---
+cbpro:
+  # url: https://api.exchange.coinbase.com # Production
+  url: https://api-public.sandbox.exchange.coinbase.com # Sandbox
+  key: 
+  secret: 
+  passphrase: 
+
+order_form:
+  # View order minimums at https://pro.coinbase.com/markets
+  - asset: ETH-USD
+    amount: 10.00
+  - asset: BTC-USD
+    amount: 10.00
