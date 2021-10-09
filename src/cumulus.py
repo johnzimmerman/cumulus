@@ -3,6 +3,7 @@
 
 """cumulus.py: Dollar-cost average cryptocurrency on Coinbase Pro."""
 
+import argparse
 import logging
 
 import cbpro
@@ -13,6 +14,7 @@ import yaml
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
+CBPRO_ENV = 'sandbox'
 
 def read_yaml(file_path):
     with open(file_path, "r") as f:
@@ -43,6 +45,10 @@ class OrderManager:
 if __name__ == "__main__":
     logging.info("Running Cumulus...")
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--config', help='name of the config file in ./conf/ directory', required=True)
+    args = parser.parse_args()
+    
     config_data = read_yaml("conf/sandbox.yml")
     api_url = config_data["cbpro"]["url"]
     key = config_data["cbpro"]["key"]
