@@ -47,7 +47,7 @@ The following payload will purchase $10 worth of BTC, $10 worth of ETH, and $5.0
 
 ## Helpful links
 
-- [coinbase Pro API documentation](https://docs.pro.coinbase.com)
+- [coinbase Pro API documentation](https://docs.cloud.coinbase.com/exchange/docs) RECENTLY UPDATED
 - Sandbox website: <https://public.sandbox.pro.coinbase.com>
 - [coinbasepro-python library](https://github.com/danpaquin/coinbasepro-python)
 - [Functions Framework for Python](https://github.com/GoogleCloudPlatform/functions-framework-python) - Test GCP functions locally
