@@ -43,27 +43,32 @@ class OrderManager:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(allow_abbrev=False)
-    parser.add_argument('--production', action='store_const', const='production', default='sandbox',
+    parser.add_argument('--production', action='store_true',
                         help='use coinbase pro production env')
     args = parser.parse_args()
-    
-    ENVIRONMENT = args.production
-    URL = 'https://api.exchange.coinbase.com' if ENVIRONMENT == 'production' else 'https://api-public.sandbox.exchange.coinbase.com'
+    is_prod = args.production
+
+    if is_prod:
+        environment = 'production'
+        url = 'https://api.exchange.coinbase.com'
+    else:
+        environment = 'sandbox'
+        url = 'https://api-public.sandbox.exchange.coinbase.com'
 
     logging.info("Running Cumulus...")
     # TODO: Gracefully exit if file isn't found
     config_data = read_yaml("config.yml")
 
-    KEY = config_data[ENVIRONMENT]["cbpro"]["key"]
-    SECRET = config_data[ENVIRONMENT]["cbpro"]["secret"]
-    PASSPHRASE = config_data[ENVIRONMENT]["cbpro"]["passphrase"]
-    ORDER_FORM = config_data[ENVIRONMENT]["order_form"]
+    key = config_data[environment]["cbpro"]["key"]
+    secret = config_data[environment]["cbpro"]["secret"]
+    passphrase = config_data[environment]["cbpro"]["passphrase"]
+    order_form = config_data[environment]["order_form"]
 
     auth_client = cbpro.AuthenticatedClient(
-        KEY, SECRET, PASSPHRASE, api_url=URL)
+        key, secret, passphrase, api_url=url)
     my_order_manager = OrderManager(auth_client)
 
-    for order in ORDER_FORM:
+    for order in order_form:
         asset = order["asset"]
         amount = order["amount"]
         my_order_manager.placeMarketOrder(asset, amount)
