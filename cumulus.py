@@ -5,9 +5,14 @@
 
 import argparse
 import logging
+import os
 
 import cbpro
 import yaml
+
+
+THIS_DIR = os.path.dirname(os.path.realpath(__file__))
+CONFIG_FILE = os.path.join(THIS_DIR, 'config.yml')
 
 # Set logging format
 # e.g. 2021-06-20 12:09:10,767 - INFO - Running cumulus.py
@@ -57,7 +62,7 @@ if __name__ == "__main__":
 
     logging.info("Running Cumulus...")
     # TODO: Gracefully exit if file isn't found
-    config_data = read_yaml("config.yml")
+    config_data = read_yaml(CONFIG_FILE)
 
     key = config_data[environment]["cbpro"]["key"]
     secret = config_data[environment]["cbpro"]["secret"]
