@@ -100,11 +100,13 @@ def place_order(auth, product_id, amount):
 
     try:
         response = requests.post(url, auth=auth, data=json_data)
-        if response.status_code == 200 and response.json()['success'] == True:
-            logging.info(f"Purchased {amount} of {product_id} successfully.")
+        if response.status_code == 200:
+            if response.json()['success'] == True:
+                logging.info(f"Purchased {amount} of {product_id} successfully.")
+            else:
+                logging.error(f"Purchase of {amount} of {product_id} failed. Response: {response.json()['error_response']['message']}")
         else:
-            # logging.error(f"Purchase of {amount} of {product_id} failed. Response: {response.json()['error_response']['message']}")
-            logging.error(f"Purchase of {amount} of {product_id} failed. Response: {response.content}")
+            logging.error(f"Purchase of {amount} of {product_id} failed. Response: {response.json()['message']}")
     except requests.exceptions.HTTPError as e:
         logging.error(f"Purchase of {amount} of {product_id} failed: {str(e)}")
     return 
