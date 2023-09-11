@@ -3,7 +3,6 @@
 
 """cumulus2.py: Dollar-cost average cryptocurrency on Coinbase Pro."""
 
-import argparse
 import hashlib
 import hmac
 import json
