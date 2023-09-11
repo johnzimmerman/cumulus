@@ -1,25 +1,12 @@
 ---
-sandbox:
-  cbpro:
-    key: my_sandbox_public_key
-    secret: my_sandbox_secret
-    passphrase: my_sandbox_passphrase
+coinbase_api:
+  key: my_production_public_key
+  secret: my_production_secret
 
-  order_form:
-    - asset: BTC-USD
-      amount: 69.00
-
-production:
-  cbpro:
-    key: my_production_public_key
-    secret: my_production_secret
-    passphrase: my_production_passphrase
-
-  order_form:
-    # View order minimums at https://pro.coinbase.com/markets
-    - asset: ETH-USD
-      amount: 10.00
-    - asset: BTC-USD
-      amount: 10.00
-    - asset: SOL-USD
-      amount: 10.00
+order_form:
+  - asset: ETH-USD
+    amount: 10.00
+  - asset: BTC-USD
+    amount: 10.00
+  - asset: SOL-USD
+    amount: 10.00
