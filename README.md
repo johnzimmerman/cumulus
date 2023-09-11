@@ -1,3 +1,5 @@
+<img src="cloud.png" alt="Cumbulus cloud" width="200"/>
+
 # cumulus
 
 A script to dollar-cost average cryptocurrency with the Coinbase Advanced Trade API
