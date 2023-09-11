@@ -83,7 +83,7 @@ def place_order(auth, product_id, amount):
         amount (float): The amount of the order.
 
     Returns:
-        requests.Response: The response from the API.
+        None
     """
     url = 'https://api.coinbase.com/api/v3/brokerage/orders'
     data = {
