@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""cumulus2.py: Dollar-cost average cryptocurrency on Coinbase Pro."""
+"""cumulus.py: Dollar-cost average cryptocurrency with the Coinbase Advanced Trade API."""
 
 import hashlib
 import hmac
