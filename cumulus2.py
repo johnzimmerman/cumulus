@@ -86,29 +86,28 @@ def place_order(auth, product_id, amount):
     Returns:
         requests.Response: The response from the API.
     """
-
     url = 'https://api.coinbase.com/api/v3/brokerage/orders'
-
     data = {
         'product_id': product_id,
         'side': "BUY",
         'order_configuration': {
-            "market_market_ioc": { "quote_size": str(amount) }
+            'market_market_ioc': { 'quote_size': str(amount) }
         },
-        "client_order_id": str(uuid.uuid4())
+        'client_order_id': str(uuid.uuid4())
     }
     # Serialize the data object to JSON so that it can be read in request.body
     json_data = json.dumps(data)
 
-    response = requests.post(url, auth=auth, data=json_data)
-
-    # if response.status_code == 200:
-    #     return response.json()["id"]
-    # else:
-    #     raise Exception(f"Error placing order: {response.status_code}")
-
-    # request = requests.post(url, auth=auth, data=data)
-    return response
+    try:
+        response = requests.post(url, auth=auth, data=json_data)
+        if response.status_code == 200 and response.json()['success'] == True:
+            logging.info(f"Purchased {amount} of {product_id} successfully.")
+        else:
+            # logging.error(f"Purchase of {amount} of {product_id} failed. Response: {response.json()['error_response']['message']}")
+            logging.error(f"Purchase of {amount} of {product_id} failed. Response: {response.content}")
+    except requests.exceptions.HTTPError as e:
+        logging.error(f"Purchase of {amount} of {product_id} failed: {str(e)}")
+    return 
 
 
 if __name__ == "__main__":
@@ -123,10 +122,8 @@ if __name__ == "__main__":
             cb_auth = CoinbaseAdvancedTradeAuth(api_key, api_secret)
 
             for order in order_form:
-                response = place_order(cb_auth, order['product'], order['amount'])
-                print(response.status_code)
-                print(response.content)
+                place_order(cb_auth, order['product'], order['amount'])
         else:
-            print("Config data is empty or could not be read.")
+            logging.error("Config data is empty or could not be read.")
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logging.error(f"An error occurred: {e}")
