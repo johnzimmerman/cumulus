@@ -4,9 +4,9 @@ coinbase_api:
   secret: my_production_secret
 
 order_form:
-  - asset: ETH-USD
+  - product: ETH-USD
     amount: 10.00
-  - asset: BTC-USD
+  - product: BTC-USD
     amount: 10.00
-  - asset: SOL-USD
+  - product: SOL-USD
     amount: 10.00
