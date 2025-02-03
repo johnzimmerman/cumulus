@@ -2,33 +2,17 @@
 
 # cumulus
 
-A script to dollar-cost average cryptocurrency with the Coinbase Advanced Trade API
+A script to dollar-cost average cryptocurrency with the Coinbase Advanced Trade APIs
 
 ## Getting started
 
-### Create a new API key
+### Create an API key
 
-To trade on Coinbase Advanced Trade, you must create a new API key (and cannot use your Coinbase Pro keys). See [How to Create a new API Key](https://docs.cloud.coinbase.com/advanced-trade-api/docs/migration#how-to-create-a-new-api-key) for instructions.
+You must have an (Advanced Trade) API key to get started with the Advanced Trade APIs. (You can no longer use Coinbase Pro keys.) See [Getting Started with Advanced Trade APIs](https://docs.cdp.coinbase.com/advanced-trade/docs/getting-started) for instructions.
 
-Permissions are a lot more granular than before. Check each wallet type under **Accounts** that you intend to use for buying. The below screenshot matches what's needed for the example config.
+Ensure you have the "Trade" permission checked.
 
-![Accounts API permissions](accounts.png)
-
-I toggled the following permissions, but not all are used for this particular script. You can copy mine or set your own. Just ensure you're able to read/write buys.
-
-![API permissions](permissions.png)
-
-Save and be sure to write down the passphrase and the secret because you won't be able to view them again.
-
-### Git & GitHub
-
-1. Check that you have `git` installed by running `git` in the terminal. If it's installed, move on to the next step. If your system returns `git: command not found,` install `git` with `sudo apt-get install git`
-
-1. Next, generate an SSH key by typing `ssh-keygen -t ed25519` You can choose whether or not to use a passphrase. This key will be used to pull the code from GitHub to your server.
-
-1. Send me your **public key**
-
-1. Once I've added your public key to the list of deploy keys, go to the directory where where you want cumulus installed and run, `git clone git@github.com:johnzimmerman/cumulus.git` This will download the source code to your computer.
+![API permissions](trade_permission.png)
 
 ### Python, venv, and requirements.txt
 
