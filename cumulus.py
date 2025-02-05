@@ -121,7 +121,7 @@ class CoinbaseClient:
                     return True
                 else:
                     # Handle the error response
-                    error_response = order.get('error_response', {})
+                    error_response = order['error_response']
                     error_message = error_response.get('message', 'Unknown error occurred')
                     self.logger.error(
                         f"Failed to place order - Product: {product_id}, "
