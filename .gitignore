@@ -86,7 +86,7 @@ cdp_api_key.json
 *.env
 .env
 config.yml
-
+trading_plan.yml
 # Directories containing sensitive data
 secrets/
 credentials/

@@ -1,131 +1,206 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+A trading bot that executes cryptocurrency purchases on Coinbase Advanced using their API.
+Reads trading configuration from trading_plan.yml and executes orders accordingly.
+"""
 
-"""cumulus.py: Dollar-cost average cryptocurrency with the Coinbase Advanced Trade API."""
-
-import hashlib
-import hmac
-import json
+# Standard library imports
 import logging
 import os
+import sys
 import time
-import uuid
 
-import requests
+# Third-party imports
+from coinbase.rest import RESTClient
 import yaml
 
+# Configure logging to stdout
+def setup_logging() -> logging.Logger:
+    logger = logging.getLogger('cumulus2')
+    logger.setLevel(logging.INFO)
+    
+    # Create formatter and handler
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    
+    # Stream handler
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
+    
+    return logger
 
-# Set config file constants
-THIS_DIR = os.path.dirname(os.path.realpath(__file__))
-CONFIG_FILE = os.path.join(THIS_DIR, 'config.yml')
 
-# Set logging format
-# e.g. 2021-06-20 12:09:10,767 - INFO - Running cumulus.py
-logging.basicConfig(
-    format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
+class TradingPlanLoader:
+    """Class to load and validate the trading plan from a YAML file."""
+    
+    def __init__(self):
+        self.orders = self._load_trading_plan()  # Load and validate the trading plan
 
+    def _load_trading_plan(self):
+        try:
+            with open('trading_plan.yml', 'r') as file:
+                trading_plan = yaml.safe_load(file)
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                "trading_plan.yml not found. Please create this file from trading_plan.yml.template "
+                "and specify your desired trade amounts."
+            )
+        except yaml.YAMLError as e:
+            raise ValueError(f"Error parsing trading_plan.yml: {str(e)}")
+        
+        if 'trades' not in trading_plan or not trading_plan['trades']:
+            raise ValueError("Trading plan must contain a 'trades' section and cannot be empty.")
+        
+        # Convert the simple format into order information
+        orders = []
+        for crypto, amount in trading_plan['trades'].items():
+            amount_usd = float(amount.replace('$', ''))
+            orders.append({
+                'product': f"{crypto}-USD",
+                'amount': amount_usd
+            })
 
-def read_config_file(file_path):
-    """
-    Reads and parses a configuration file in YAML format from the specified file path.
+        if not orders:
+            raise ValueError("No valid trades found in trading plan")
 
-    Args:
-        file_path (str): The path to the configuration file to be read.
+        return orders # Return the list of orders
+    
+    # def _convert_trades_to_orders(self):
+    #     orders = []
+    #     for crypto, amount in self.trades['trades'].items():
+    #         amount_usd = float(amount.replace('$', ''))
+    #         orders.append({
+    #             'product': f"{crypto}-USD",
+    #             'amount': amount_usd
+    #         })
 
-    Returns:
-        dict or None: If successful, returns a dictionary containing the configuration data.
-                     If any errors occur, returns None.
+# class Config:
+#     def __init__(self):
+#         self.config = self._load_config()
+        
+#     def _load_config(self):
+#         try:
+#             with open('trading_plan.yml', 'r') as file:
+#                 return yaml.safe_load(file)
+#         except FileNotFoundError:
+#             raise FileNotFoundError(
+#                 "trading_plan.yml not found. Please create this file from trading_plan.yml.template "
+#                 "and specify your desired trade amounts."
+#             )
+#         except yaml.YAMLError as e:
+#             raise ValueError(f"Error parsing trading_plan.yml: {str(e)}")
+            
+#         # if self.config is None:
+#         #     raise ValueError("trading_plan.yml is empty")
 
-    Raises:
-        FileNotFoundError: If the specified file does not exist at the provided file_path.
-        yaml.
-        YAMLError: If there is an issue parsing the YAML content of the file.
-        Exception: For any other unexpected errors during file reading.
-    """
+#         if config is None or not config:  # Check if config is None or empty
+#             raise ValueError("trading_plan.yml is empty")
+
+#         if 'trades' not in self.config:
+#             raise ValueError("Trading plan must contain a 'trades' section")
+            
+#         # Convert the simple format into order information
+#         self.orders = []
+#         for crypto, amount in self.config['trades'].items():
+#             # Remove '$' and convert to float
+#             amount_usd = float(amount.replace('$', ''))
+#             self.orders.append({
+#                 'product': f"{crypto}-USD",
+#                 'amount': amount_usd
+#             })
+            
+#         if not self.orders:
+#             raise ValueError("No valid trades found in trading plan")
+
+class CoinbaseClient:
+    MAX_RETRIES = 3
+    RETRY_DELAY = 1  # seconds
+    
+    def __init__(self, logger: logging.Logger, sandbox: bool = False):
+        key_path = "secrets/cdp_api_key.json"
+        
+        if not os.path.exists(key_path):
+            raise FileNotFoundError(
+                f"Coinbase API key file not found at {key_path}. "
+                "Please download your API key file from Coinbase and place it in the secrets directory."
+            )
+            
+        base_url = "api-sandbox.coinbase.com" if sandbox else "api.coinbase.com"
+        
+        try:
+            self.client = RESTClient(
+                key_file=key_path,
+                base_url=base_url
+            )
+        except Exception as e:
+            raise RuntimeError(f"Failed to initialize Coinbase client: {str(e)}")
+            
+        self.logger = logger
+    
+    def place_market_order(self, product_id: str, amount_usd: float) -> bool:
+        """
+        Places a market buy order with retry logic.
+        Returns True if successful, False otherwise.
+        """
+        for attempt in range(self.MAX_RETRIES):
+            try:
+                # Place market order using market_order_buy
+                order = self.client.market_order_buy(
+                    client_order_id="",  # Empty string will auto-generate a unique ID
+                    product_id=product_id,
+                    quote_size=str(amount_usd)
+                )
+                
+                # Log successful order
+                self.logger.info(
+                    f"Successfully placed order - Product: {product_id}, "
+                    f"Amount: ${amount_usd:.2f}, "
+                    f"Transaction ID: {order['order_id']}, "
+                    f"Status: {order['status']}"
+                )
+                return True
+                
+            except Exception as e:
+                self.logger.warning(
+                    f"Attempt {attempt + 1}/{self.MAX_RETRIES} failed for {product_id}: {str(e)}"
+                )
+                if attempt < self.MAX_RETRIES - 1:
+                    time.sleep(self.RETRY_DELAY)
+                else:
+                    self.logger.error(
+                        f"Failed to place order after {self.MAX_RETRIES} attempts - "
+                        f"Product: {product_id}, Amount: ${amount_usd:.2f}"
+                    )
+                    return False
+
+def main():
+    logger = setup_logging()
+    
     try:
-        with open(file_path, "r") as f:
-            return yaml.safe_load(f)
-    except FileNotFoundError:
-        print(f"Error: File not found at path '{file_path}'")
-    except yaml.YAMLError as e:
-        print(f"Error parsing YAML file at path '{file_path}': {e}")
+        # Load trading plan
+        trading_plan = TradingPlanLoader() # No arguments needed
+        orders = trading_plan.orders # Get the list of orders
+        
+        # Initialize Coinbase client
+        client = CoinbaseClient(
+            logger=logger,
+            sandbox=True # Enable sandbox mode
+        )
+        
+        # Process each order
+        for order in orders:
+            product_id = order['product']
+            amount = float(order['amount'])
+            
+            logger.info(f"Processing order for {product_id} - Amount: ${amount:.2f}")
+            client.place_market_order(product_id, amount)
+            
+        logger.info("Order processing completed")
+        
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-
-
-class CoinbaseAdvancedTradeAuth(requests.auth.AuthBase):
-    def __init__(self, api_key, api_secret):
-        self.api_key = api_key
-        self.api_secret = api_secret
-
-    def __call__(self, request):
-        timestamp = str(int(time.time()))
-        message = timestamp + request.method + request.path_url.split('?')[0] + str(request.body or '')
-        signature = hmac.new(self.api_secret.encode('utf-8'), message.encode('utf-8'), hashlib.sha256).hexdigest()
-        request.headers.update({
-            'CB-ACCESS-KEY': self.api_key,
-            'CB-ACCESS-TIMESTAMP': timestamp,
-            'CB-ACCESS-SIGN': signature,
-            'CB-VERSION': '2023-07-15',
-            'Content-Type': 'application/json'
-        })
-
-        return request
-
-
-def place_order(auth, product_id, amount):
-    """
-    Place a market order for the given product ID and amount.
-
-    Args:
-        auth (CoinbaseAdvancedTradeAuth): The authentication object.
-        product_id (str): The product ID. (e.g. 'BTC-USD')
-        amount (float): The amount of the order.
-
-    Returns:
-        None
-    """
-    url = 'https://api.coinbase.com/api/v3/brokerage/orders'
-    data = {
-        'product_id': product_id,
-        'side': "BUY",
-        'order_configuration': {
-            'market_market_ioc': { 'quote_size': str(amount) }
-        },
-        'client_order_id': str(uuid.uuid4())
-    }
-    # Serialize the data object to JSON so that it can be read in request.body
-    json_data = json.dumps(data)
-
-    try:
-        response = requests.post(url, auth=auth, data=json_data)
-        if response.status_code == 200:
-            if response.json()['success'] == True:
-                logging.info(f"Purchased {amount} of {product_id} successfully.")
-            else:
-                logging.error(f"Purchase of {amount} of {product_id} failed. Response: {response.json()['error_response']['message']}")
-        else:
-            logging.error(f"Purchase of {amount} of {product_id} failed. Response: {response.json()['message']}")
-    except requests.exceptions.HTTPError as e:
-        logging.error(f"Purchase of {amount} of {product_id} failed: {str(e)}")
-    return 
-
+        logger.error(f"An unexpected error occurred: {str(e)}")
+        sys.exit(1)
 
 if __name__ == "__main__":
-    logging.info("Running Cumulus Advanced Trade.")
-    try:
-        config_data = read_config_file(CONFIG_FILE)
-        if config_data:
-            api_key = config_data["coinbase_api"]["key"]
-            api_secret = config_data["coinbase_api"]["secret"]
-            order_form = config_data ["order_form"]
-
-            cb_auth = CoinbaseAdvancedTradeAuth(api_key, api_secret)
-
-            for order in order_form:
-                place_order(cb_auth, order['product'], order['amount'])
-        else:
-            logging.error("Config data is empty or could not be read.")
-    except Exception as e:
-        logging.error(f"An error occurred: {e}")
-    logging.info("Cumulus Advanced Trade finished running.")
+    main()

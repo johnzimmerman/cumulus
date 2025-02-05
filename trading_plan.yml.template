@@ -1,0 +1,5 @@
+# Specify the amount in USD to spend on each cryptocurrency
+trades:
+  ETH: $10.00
+  BTC: $10.00
+  SOL: $10.00 
