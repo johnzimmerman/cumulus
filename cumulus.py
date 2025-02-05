@@ -107,14 +107,27 @@ class CoinbaseClient:
                     quote_size=str(amount_usd)
                 )
                 
-                # Log successful order
-                self.logger.info(
-                    f"Successfully placed order - Product: {product_id}, "
-                    f"Amount: ${amount_usd:.2f}, "
-                    f"Transaction ID: {order['order_id']}, "
-                    f"Status: {order['status']}"
-                )
-                return True
+                # Log the full order response for debugging
+                # self.logger.info(f"Order response: {order}")
+                
+                # Check if the order was successful
+                if order['success']:
+                    success_response = order['success_response']
+                    self.logger.info(
+                        f"Successfully placed order - Product: {product_id}, "
+                        f"Amount: ${amount_usd:.2f}, "
+                        f"Order ID: {success_response['order_id']}"
+                    )
+                    return True
+                else:
+                    # Handle the error response
+                    error_response = order.get('error_response', {})
+                    error_message = error_response.get('message', 'Unknown error occurred')
+                    self.logger.error(
+                        f"Failed to place order - Product: {product_id}, "
+                        f"Error: {error_message}"
+                    )
+                    return False
                 
             except Exception as e:
                 self.logger.warning(
@@ -141,7 +154,7 @@ def main():
     is_production_mode = args.production
 
     # Log the mode
-    logger.info(f"Running in {'production' if is_production_mode else 'sandbox'} mode")
+    logger.info(f"Running in {'PRODUCTION' if is_production_mode else 'SANDBOX'} mode")
 
     try:
         # Load trading plan
