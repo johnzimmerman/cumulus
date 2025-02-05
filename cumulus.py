@@ -72,7 +72,7 @@ class CoinbaseClient:
     MAX_RETRIES = 3
     RETRY_DELAY = 1  # seconds
     
-    def __init__(self, logger: logging.Logger, sandbox: bool = True):
+    def __init__(self, logger: logging.Logger, is_production_mode: bool = False):
         key_path = "secrets/cdp_api_key.json"
         
         if not os.path.exists(key_path):
@@ -81,7 +81,7 @@ class CoinbaseClient:
                 "Please download your API key file from Coinbase and place it in the secrets directory."
             )
             
-        base_url = "api-sandbox.coinbase.com" if sandbox else "api.coinbase.com"
+        base_url = "api-sandbox.coinbase.com" if not is_production_mode else "api.coinbase.com"
         
         try:
             self.client = RESTClient(
@@ -137,8 +137,11 @@ def main():
     parser.add_argument('--production', '-p', action='store_true', help='Run in production mode')
     args = parser.parse_args()
 
-    # Determine if we are in sandbox mode
-    sandbox_mode = not args.production
+    # Determine if we are in production mode
+    is_production_mode = args.production
+
+    # Log the mode
+    logger.info(f"Running in {'production' if is_production_mode else 'sandbox'} mode")
 
     try:
         # Load trading plan
@@ -148,7 +151,7 @@ def main():
         # Initialize Coinbase client
         client = CoinbaseClient(
             logger=logger,
-            sandbox=sandbox_mode # Set sandbox mode based on argument
+            is_production_mode=is_production_mode # Set production mode based on argument
         )
         
         # Process each order
