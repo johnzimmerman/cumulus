@@ -6,6 +6,7 @@ Reads trading configuration from trading_plan.yml and executes orders accordingl
 """
 
 # Standard library imports
+import argparse
 import logging
 import os
 import sys
@@ -65,59 +66,13 @@ class TradingPlanLoader:
             raise ValueError("No valid trades found in trading plan")
 
         return orders # Return the list of orders
-    
-    # def _convert_trades_to_orders(self):
-    #     orders = []
-    #     for crypto, amount in self.trades['trades'].items():
-    #         amount_usd = float(amount.replace('$', ''))
-    #         orders.append({
-    #             'product': f"{crypto}-USD",
-    #             'amount': amount_usd
-    #         })
 
-# class Config:
-#     def __init__(self):
-#         self.config = self._load_config()
-        
-#     def _load_config(self):
-#         try:
-#             with open('trading_plan.yml', 'r') as file:
-#                 return yaml.safe_load(file)
-#         except FileNotFoundError:
-#             raise FileNotFoundError(
-#                 "trading_plan.yml not found. Please create this file from trading_plan.yml.template "
-#                 "and specify your desired trade amounts."
-#             )
-#         except yaml.YAMLError as e:
-#             raise ValueError(f"Error parsing trading_plan.yml: {str(e)}")
-            
-#         # if self.config is None:
-#         #     raise ValueError("trading_plan.yml is empty")
-
-#         if config is None or not config:  # Check if config is None or empty
-#             raise ValueError("trading_plan.yml is empty")
-
-#         if 'trades' not in self.config:
-#             raise ValueError("Trading plan must contain a 'trades' section")
-            
-#         # Convert the simple format into order information
-#         self.orders = []
-#         for crypto, amount in self.config['trades'].items():
-#             # Remove '$' and convert to float
-#             amount_usd = float(amount.replace('$', ''))
-#             self.orders.append({
-#                 'product': f"{crypto}-USD",
-#                 'amount': amount_usd
-#             })
-            
-#         if not self.orders:
-#             raise ValueError("No valid trades found in trading plan")
 
 class CoinbaseClient:
     MAX_RETRIES = 3
     RETRY_DELAY = 1  # seconds
     
-    def __init__(self, logger: logging.Logger, sandbox: bool = False):
+    def __init__(self, logger: logging.Logger, sandbox: bool = True):
         key_path = "secrets/cdp_api_key.json"
         
         if not os.path.exists(key_path):
@@ -177,6 +132,14 @@ class CoinbaseClient:
 def main():
     logger = setup_logging()
     
+    # Set up argument parsing
+    parser = argparse.ArgumentParser(description="Run the trading bot.")
+    parser.add_argument('--production', '-p', action='store_true', help='Run in production mode')
+    args = parser.parse_args()
+
+    # Determine if we are in sandbox mode
+    sandbox_mode = not args.production
+
     try:
         # Load trading plan
         trading_plan = TradingPlanLoader() # No arguments needed
@@ -185,7 +148,7 @@ def main():
         # Initialize Coinbase client
         client = CoinbaseClient(
             logger=logger,
-            sandbox=True # Enable sandbox mode
+            sandbox=sandbox_mode # Set sandbox mode based on argument
         )
         
         # Process each order
