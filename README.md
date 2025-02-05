@@ -69,7 +69,7 @@ For assets available on Coinbase Exchange, please [go here](https://exchange.coi
 
 ### Running Cumulus
 
-Cumulus is now installed, configured, and ready to run. You can execute the script manually by entering:
+Cumulus is now installed, configured, and ready to run. By default, the script runs in **sandbox mode**. To execute it in **production mode**, use the `-p` or `--production` flag. You can execute the script manually by entering:
 
 ```bash
 ./cumulus.py
@@ -81,22 +81,41 @@ or
 python cumulus.py
 ```
 
+To run in production mode:
+
+```bash
+./cumulus.py -p
+```
+
+or
+
+```bash
+python cumulus.py --production
+```
+
 ### Setting Up a Cron Job
 
-To automate the execution of Cumulus, set up a cron job using `crontab -e` to run the script at your desired interval. You can use [this online cron expression generator](https://crontab.cronhub.io) for assistance.
+To automate the execution of Cumulus, set up a cron job using `crontab -e` to run the script at your desired interval. Remember that the script runs in **sandbox mode** by default, so if you want it to run in **production mode**, include the `-p` or `--production` flag in your cron job command. You can use [this online cron expression generator](https://crontab.cronhub.io) for assistance.
 
 #### Examples
 
-- To run the script every Friday at 6:00 AM server time:
+- To run the script every Friday at 6:00 AM server time in production mode:
 
   ```bash
-  0 6 * * 5 /path/to/cumulus/venv/bin/python /path/to/cumulus/cumulus.py
+  0 6 * * 5 /path/to/cumulus/venv/bin/python /path/to/cumulus/cumulus.py -p
   ```
 
-- To run the script every minute:
+- To run the script every minute in sandbox mode:
 
   ```bash
   * * * * * /path/to/cumulus/venv/bin/python /path/to/cumulus/cumulus.py
   ```
 
+- To run the script every minute in production mode:
+
+  ```bash
+  * * * * * /path/to/cumulus/venv/bin/python /path/to/cumulus/cumulus.py -p
+  ```
+
 ### Profit!
+
