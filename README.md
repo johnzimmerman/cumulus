@@ -2,65 +2,120 @@
 
 # cumulus
 
-A script to dollar-cost average cryptocurrency with the Coinbase Advanced Trade API
+A script to dollar-cost average cryptocurrency with the Coinbase Advanced Trade APIs
 
 ## Getting started
 
-### Create a new API key
+### Create an API Key
 
-To trade on Coinbase Advanced Trade, you must create a new API key (and cannot use your Coinbase Pro keys). See [How to Create a new API Key](https://docs.cloud.coinbase.com/advanced-trade-api/docs/migration#how-to-create-a-new-api-key) for instructions.
+To use the Advanced Trade APIs, you must create an API key. Note that Coinbase Pro keys are no longer supported. Follow the instructions in the [Getting Started with Advanced Trade APIs](https://docs.cdp.coinbase.com/advanced-trade/docs/getting-started) guide.
 
-Permissions are a lot more granular than before. Check each wallet type under **Accounts** that you intend to use for buying. The below screenshot matches what's needed for the example config.
+Ensure that you have the "Trade" permission checked for your API key.
 
-![Accounts API permissions](accounts.png)
+![API permissions](trade_permission.png)
 
-I toggled the following permissions, but not all are used for this particular script. You can copy mine or set your own. Just ensure you're able to read/write buys.
+1. After setting the permissions, click the **Create & download** button to generate your API key. This will download a file named `cdp_api_key.json`.
 
-![API permissions](permissions.png)
+2. Create a folder named `secrets` in your project directory.
 
-Save and be sure to write down the passphrase and the secret because you won't be able to view them again.
+3. Place your `cdp_api_key.json` file inside the `secrets` folder. This file should contain your API key and secret.
 
-### Git & GitHub
 
-1. Check that you have `git` installed by running `git` in the terminal. If it's installed, move on to the next step. If your system returns `git: command not found,` install `git` with `sudo apt-get install git`
+### Setting Up Python and Virtual Environment
 
-1. Next, generate an SSH key by typing `ssh-keygen -t ed25519` You can choose whether or not to use a passphrase. This key will be used to pull the code from GitHub to your server.
+1. Navigate to your project directory (e.g., `/home/<user>/cumulus`).
+2. Create a virtual environment by running:
 
-1. Send me your **public key**
+   ```bash
+   python -m venv venv
+   ```
 
-1. Once I've added your public key to the list of deploy keys, go to the directory where where you want cumulus installed and run, `git clone git@github.com:johnzimmerman/cumulus.git` This will download the source code to your computer.
+   This will create a folder named `venv`, which is ignored by `git`.
 
-### Python, venv, and requirements.txt
+3. Activate the virtual environment:
+   - On macOS/Linux:
 
-1. Navigate to your project directory (e.g. `/home/<user>/cumulus`) and enter `python -m venv venv` This will create a virtual environment folder `venv`, which is ignored by `git`.
+     ```bash
+     source venv/bin/activate
+     ```
 
-1. Activate the virtualenv with `source venv/bin/activate`
+   - On Windows:
 
-1. Install the dependencies within the virtualenv: `pip install -r requirements.txt`
+     ```bash
+     venv\Scripts\activate
+     ```
 
-### Edit the config file
+4. Install the required dependencies within the virtual environment:
 
-1. Copy—don't just rename—the included example config file, `config.yml.example`, to `config.yml`. Your config file will be ignored by `git` and will remain on your system only.
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-1. Edit the config file. *Note: YAML is picky about spacing, so ensure your indentation stays consistent.*
-    - Enter your API key and secret.
-    - Enter the coins you want to buy and how much of each. You can add as many or as little as you like.
+### Edit the Trading Plan
 
-Cumulus is now installed, configured, and ready to run. Enter `./cumulus.py` or `python cumulus.py` to run it manually.
+1. Create a trading plan file named `trading_plan.yml` in your project directory. You can use the provided template `trading_plan.yml.template` as a starting point.
+2. Specify the amount in USD to spend on each cryptocurrency in the `trades` section of the `trading_plan.yml` file. For example:
 
-### Setup your cron
+   ```yaml
+   trades:
+     ETH: $10.00
+     BTC: $10.00
+     SOL: $10.00 
+   ```
 
-Next, set a cron job using `crontab -e` to run cumulus at your desired interval. Visit https://crontab.cronhub.io for a quick and simple editor that will help you build your cron expression.
+*Note: YAML is picky about spacing, so ensure your indentation stays consistent.*
+
+For assets available on Coinbase Exchange, please [go here](https://exchange.coinbase.com/markets).
+
+### Running Cumulus
+
+Cumulus is now installed, configured, and ready to run. By default, the script runs in **sandbox mode**. To execute it in **production mode**, use the `-p` or `--production` flag. You can execute the script manually by entering:
+
+```bash
+./cumulus.py
+```
+
+or
+
+```bash
+python cumulus.py
+```
+
+To run in production mode:
+
+```bash
+./cumulus.py -p
+```
+
+or
+
+```bash
+python cumulus.py --production
+```
+
+### Setting Up a Cron Job
+
+To automate the execution of Cumulus, set up a cron job using `crontab -e` to run the script at your desired interval. Remember that the script runs in **sandbox mode** by default, so if you want it to run in **production mode**, include the `-p` or `--production` flag in your cron job command. You can use [this online cron expression generator](https://crontab.cronhub.io) for assistance.
 
 #### Examples
 
-1. `0 6 * * 5 /path/to/cumulus/venv/bin/python /path/to/cumulus/cumulus.py` - Runs 6:00 am server time every Fri
+- To run the script every Friday at 6:00 AM server time in production mode:
 
-1. `* * * * * /path/to/cumulus/venv/bin/python /path/to/cumulus/cumulus.py` - Runs every min
+  ```bash
+  0 6 * * 5 /path/to/cumulus/venv/bin/python /path/to/cumulus/cumulus.py -p
+  ```
+
+- To run the script every minute in sandbox mode:
+
+  ```bash
+  * * * * * /path/to/cumulus/venv/bin/python /path/to/cumulus/cumulus.py
+  ```
+
+- To run the script every minute in production mode:
+
+  ```bash
+  * * * * * /path/to/cumulus/venv/bin/python /path/to/cumulus/cumulus.py -p
+  ```
 
 ### Profit!
 
-## Helpful links
-
-- [Introduction to Advanced Trade API](https://docs.cloud.coinbase.com/advanced-trade-api/docs/welcome)
-- [Postman API Client](https://www.postman.com/product/api-client/) - Test API calls

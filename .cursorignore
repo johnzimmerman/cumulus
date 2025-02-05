@@ -1,0 +1,7 @@
+# Sensitive files
+cdp_api_key.json
+*.env
+.env
+config.yml
+secrets/
+credentials/
