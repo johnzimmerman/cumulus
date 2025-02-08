@@ -81,15 +81,9 @@ ipython_config.py
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow
 __pypackages__/
 
-# Sensitive files
-cdp_api_key.json
-*.env
-.env
-config.yml
+# Sensitive and personal data
+secrets/*.json
 trading_plan.yml
-# Directories containing sensitive data
-secrets/
-credentials/
 
 # Environments
 *.env
