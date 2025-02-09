@@ -1,8 +1,8 @@
-<img src="cloud.png" alt="Cumbulus cloud" width="200"/>
-
 # cumulus
 
-A script to dollar-cost average cryptocurrency with the Coinbase Advanced Trade APIs
+<img src="cloud.png" alt="Cumulus cloud" width="200"/>
+
+Cumulus is a Python script for executing cryptocurrency purchases through the Coinbase Advanced Trade API. Users specify their desired crypto allocations in a YAML configuration file, and the script executes the purchases according to these preferences. When combined with a task scheduler (like cron), this script can be used to implement a dollar-cost averaging (DCA) strategy.
 
 ## Getting started
 
@@ -16,10 +16,7 @@ Ensure that you have the "Trade" permission checked for your API key.
 
 1. After setting the permissions, click the **Create & download** button to generate your API key. This will download a file named `cdp_api_key.json`.
 
-2. Create a folder named `secrets` in your project directory.
-
-3. Place your `cdp_api_key.json` file inside the `secrets` folder. This file should contain your API key and secret.
-
+2. Place the `cdp_api_key.json` file in the `secrets` directory of your project.
 
 ### Setting Up Python and Virtual Environment
 
@@ -119,3 +116,10 @@ To automate the execution of Cumulus, set up a cron job using `crontab -e` to ru
 
 ### Profit!
 
+## Usage
+
+To use this script for dollar-cost averaging:
+
+1. Configure your trading plan in `trading_plan.yml`.
+2. Set up your API key in the `secrets` directory.
+3. Schedule the script to run at your desired intervals using cron or another task scheduler.
