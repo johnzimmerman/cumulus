@@ -4,6 +4,22 @@
 
 Cumulus is a Python script for executing cryptocurrency purchases through the Coinbase Advanced Trade API. Users specify their desired crypto allocations in a YAML configuration file, and the script executes the purchases according to these preferences. When combined with a task scheduler (like cron), this script can be used to implement a dollar-cost averaging (DCA) strategy.
 
+## Why Use Coinbase's Advanced Trade?
+
+Trading through Advanced Trade instead of the traditional Coinbase UI results in significant fee savings.
+
+Assume a **$10 weekly investment over a year:**
+
+Coinbase UI: $51.48 in fees/year (9.9% per transaction)
+Advanced Trade: $6.24 in fees/year (1.2% per transaction)
+
+While the Coinbase UI provides convenience with built-in DCA features, using this script with Advanced Trade can reduce fees by approximately 87.9%. Over a year, this savings on a $10 weekly investment is equivalent to getting 5 extra weeks of investing for free!
+
+### Notes
+
+1. All fees and charges are subject to change, and it is recommended to review the most up-to-date fee information on the Coinbase platform.
+2. The previous calculations assume you don't have a Coinbase One subscription.
+
 ## Getting started
 
 ### Create an API Key
@@ -116,10 +132,6 @@ To automate the execution of Cumulus, set up a cron job using `crontab -e` to ru
 
 ### Profit!
 
-## Usage
+## Special Thanks
 
-To use this script for dollar-cost averaging:
-
-1. Configure your trading plan in `trading_plan.yml`.
-2. Set up your API key in the `secrets` directory.
-3. Schedule the script to run at your desired intervals using cron or another task scheduler.
+Thank you to [Frank Pelosi](https://fpelosi.com/) for shedding light on Coinbase's high fees, the savings possible with Advanced Trade, and the idea of using the API for automation.
