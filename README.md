@@ -1,8 +1,24 @@
-<img src="cloud.png" alt="Cumbulus cloud" width="200"/>
-
 # cumulus
 
-A script to dollar-cost average cryptocurrency with the Coinbase Advanced Trade APIs
+<img src="cloud.png" alt="Cumulus cloud" width="200"/>
+
+Cumulus is a Python script for executing cryptocurrency purchases through the Coinbase Advanced Trade API. Users specify their desired crypto allocations in a YAML configuration file, and the script executes the purchases according to these preferences. When combined with a task scheduler (like cron), this script can be used to implement a dollar-cost averaging (DCA) strategy.
+
+## Why Use Coinbase's Advanced Trade?
+
+Trading through Advanced Trade instead of the traditional Coinbase UI results in significant fee savings.
+
+Assume a **$10 weekly investment over a year:**
+
+Coinbase UI: $51.48 in fees/year (9.9% per transaction)
+Advanced Trade: $6.24 in fees/year (1.2% per transaction)
+
+While the Coinbase UI provides convenience with built-in DCA features, using this script with Advanced Trade can reduce fees by approximately 87.9%. Over a year, this savings on a $10 weekly investment is equivalent to getting 5 extra weeks of investing for free!
+
+### Notes
+
+1. All fees and charges are subject to change, and it is recommended to review the most up-to-date fee information on the Coinbase platform.
+2. The previous calculations assume you don't have a Coinbase One subscription.
 
 ## Getting started
 
@@ -16,10 +32,7 @@ Ensure that you have the "Trade" permission checked for your API key.
 
 1. After setting the permissions, click the **Create & download** button to generate your API key. This will download a file named `cdp_api_key.json`.
 
-2. Create a folder named `secrets` in your project directory.
-
-3. Place your `cdp_api_key.json` file inside the `secrets` folder. This file should contain your API key and secret.
-
+2. Place the `cdp_api_key.json` file in the `secrets` directory of your project.
 
 ### Setting Up Python and Virtual Environment
 
@@ -119,3 +132,6 @@ To automate the execution of Cumulus, set up a cron job using `crontab -e` to ru
 
 ### Profit!
 
+## Special Thanks
+
+Thank you to [Frank Pelosi](https://fpelosi.com/) for shedding light on Coinbase's high fees, the savings possible with Advanced Trade, and the idea of using the API for automation.

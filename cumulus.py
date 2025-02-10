@@ -5,14 +5,13 @@ A trading bot that executes cryptocurrency purchases on Coinbase Advanced using 
 Reads trading configuration from trading_plan.yml and executes orders accordingly.
 """
 
-# Standard library imports
+
 import argparse
 import logging
 import os
 import sys
 import time
 
-# Third-party imports
 from coinbase.rest import RESTClient
 import yaml
 
@@ -39,8 +38,12 @@ class TradingPlanLoader:
         self.orders = self._load_trading_plan()  # Load and validate the trading plan
 
     def _load_trading_plan(self):
+        # Get the directory of the current script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        trading_plan_path = os.path.join(current_dir, 'trading_plan.yml')
+
         try:
-            with open('trading_plan.yml', 'r') as file:
+            with open(trading_plan_path, 'r') as file:
                 trading_plan = yaml.safe_load(file)
         except FileNotFoundError:
             raise FileNotFoundError(
