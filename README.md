@@ -10,8 +10,9 @@ Trading through Advanced Trade instead of the traditional Coinbase UI results in
 
 Assume a **$10 weekly investment over a year:**
 
-Coinbase UI: $51.48 in fees/year (9.9% per transaction)
-Advanced Trade: $6.24 in fees/year (1.2% per transaction)
+**Coinbase UI:** $51.48 in fees/year (9.9% per transaction)
+
+**Advanced Trade:** $6.24 in fees/year (1.2% per transaction)
 
 While the Coinbase UI provides convenience with built-in DCA features, using this script with Advanced Trade can reduce fees by approximately 87.9%. Over a year, this savings on a $10 weekly investment is equivalent to getting 5 extra weeks of investing for free!
 
